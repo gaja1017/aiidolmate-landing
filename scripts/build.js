@@ -6,7 +6,13 @@ async function build() {
   console.log('Building landing page...');
 
   const srcPath = path.join(__dirname, '../src/index.html');
-  const outPath = path.join(__dirname, '../public/index.html');
+  const publicDir = path.join(__dirname, '../public');
+  const outPath = path.join(publicDir, 'index.html');
+
+  // Create public directory if it doesn't exist
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
 
   if (!fs.existsSync(srcPath)) {
     console.error('Source file not found: src/index.html');
