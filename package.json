@@ -1,0 +1,12 @@
+{
+  "name": "aiidolmate-landing",
+  "version": "1.0.0",
+  "description": "AI Idol Mate Landing Page",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "npx serve public"
+  },
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0"
+  }
+}
