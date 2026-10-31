@@ -97,29 +97,22 @@ img{-webkit-user-drag:none;-khtml-user-drag:none;-moz-user-drag:none;-o-user-dra
     img.addEventListener('contextmenu',function(e){e.preventDefault();});
     img.addEventListener('dragstart',function(e){e.preventDefault();});
   });
-  // Detect DevTools (multiple methods)
-  var devtools={open:false};
-  // Method 1: debugger timing
-  setInterval(function(){
-    var start=performance.now();
-    debugger;
-    if(performance.now()-start>100){
-      if(!devtools.open){
-        devtools.open=true;
-        document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0b0b13;color:#fff;font-family:sans-serif;text-align:center;"><div><h1>Access Denied</h1><p>Developer tools are not allowed.</p></div></div>';
+  // Detect DevTools - only on desktop
+  var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if(!isMobile){
+    var devtools={open:false};
+    // Method: debugger timing (desktop only)
+    setInterval(function(){
+      var start=performance.now();
+      debugger;
+      if(performance.now()-start>100){
+        if(!devtools.open){
+          devtools.open=true;
+          document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0b0b13;color:#fff;font-family:sans-serif;text-align:center;"><div><h1>Access Denied</h1><p>Developer tools are not allowed.</p></div></div>';
+        }
       }
-    }
-  },1000);
-  // Method 2: window size detection
-  var threshold=160;
-  setInterval(function(){
-    if(window.outerWidth-window.innerWidth>threshold||window.outerHeight-window.innerHeight>threshold){
-      if(!devtools.open){
-        devtools.open=true;
-        document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0b0b13;color:#fff;font-family:sans-serif;text-align:center;"><div><h1>Access Denied</h1><p>Developer tools are not allowed.</p></div></div>';
-      }
-    }
-  },500);
+    },1000);
+  }
   // Disable view-source protocol
   if(window.location.protocol==='view-source:'){
     window.location.href='about:blank';
