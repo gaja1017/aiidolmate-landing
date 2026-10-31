@@ -6,13 +6,40 @@ async function build() {
   console.log('Building landing page...');
 
   const srcPath = path.join(__dirname, '../src/index.html');
+  const srcAssetsDir = path.join(__dirname, '../src/assets');
   const publicDir = path.join(__dirname, '../public');
+  const publicAssetsDir = path.join(publicDir, 'assets');
   const outPath = path.join(publicDir, 'index.html');
 
   // Create public directory if it doesn't exist
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
   }
+
+  // Create public/assets directory and copy assets
+  if (fs.existsSync(srcAssetsDir)) {
+    if (!fs.existsSync(publicAssetsDir)) {
+      fs.mkdirSync(publicAssetsDir, { recursive: true });
+    }
+    const assetFiles = fs.readdirSync(srcAssetsDir);
+    assetFiles.forEach(file => {
+      const srcFile = path.join(srcAssetsDir, file);
+      const destFile = path.join(publicAssetsDir, file);
+      fs.copyFileSync(srcFile, destFile);
+    });
+    console.log(`📦 Copied ${assetFiles.length} assets to public/assets/`);
+  }
+
+  // Copy favicon files
+  const faviconFiles = ['favicon.ico', 'favicon.png', 'apple-touch-icon.png'];
+  faviconFiles.forEach(file => {
+    const srcFile = path.join(__dirname, '../src', file);
+    const destFile = path.join(publicDir, file);
+    if (fs.existsSync(srcFile)) {
+      fs.copyFileSync(srcFile, destFile);
+    }
+  });
+  console.log(`🎨 Copied favicon files`);
 
   if (!fs.existsSync(srcPath)) {
     console.error('Source file not found: src/index.html');
