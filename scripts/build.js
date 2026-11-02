@@ -16,18 +16,29 @@ async function build() {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  // Create public/assets directory and copy assets
-  if (fs.existsSync(srcAssetsDir)) {
-    if (!fs.existsSync(publicAssetsDir)) {
-      fs.mkdirSync(publicAssetsDir, { recursive: true });
+  // Create public/assets directory and copy assets (recursively)
+  function copyDirRecursive(src, dest) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
     }
-    const assetFiles = fs.readdirSync(srcAssetsDir);
-    assetFiles.forEach(file => {
-      const srcFile = path.join(srcAssetsDir, file);
-      const destFile = path.join(publicAssetsDir, file);
-      fs.copyFileSync(srcFile, destFile);
+    const entries = fs.readdirSync(src, { withFileTypes: true });
+    let count = 0;
+    entries.forEach(entry => {
+      const srcPath = path.join(src, entry.name);
+      const destPath = path.join(dest, entry.name);
+      if (entry.isDirectory()) {
+        count += copyDirRecursive(srcPath, destPath);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+        count++;
+      }
     });
-    console.log(`📦 Copied ${assetFiles.length} assets to public/assets/`);
+    return count;
+  }
+
+  if (fs.existsSync(srcAssetsDir)) {
+    const assetCount = copyDirRecursive(srcAssetsDir, publicAssetsDir);
+    console.log(`📦 Copied ${assetCount} assets to public/assets/`);
   }
 
   // Copy favicon files
